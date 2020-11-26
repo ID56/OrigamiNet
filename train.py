@@ -40,6 +40,10 @@ from utils import CTCLabelConverter, Averager, ModelEma, Metric
 from cnv_model import OrigamiNet, ginM
 from test import validation
 
+############
+DEBUG = True
+############
+
 parOptions = namedtuple('parOptions', ['DP', 'DDP', 'HVD'])
 parOptions.__new__.__defaults__ = (False,) * len(parOptions._fields)
 
@@ -190,6 +194,7 @@ def train(opt, AMP, WdB, train_data_path, train_data_list, test_data_path, test_
 
         for j in trange(valInterval, leave=False, desc='Training'):
 
+            # Load a batch
             try:
                 image_tensors, labels = next(titer)
             except StopIteration:
@@ -197,7 +202,8 @@ def train(opt, AMP, WdB, train_data_path, train_data_list, test_data_path, test_
                 if HVD3P: train_sampler.set_epoch(epoch)
                 titer = iter(train_loader)
                 image_tensors, labels = next(titer)
-                
+            
+            # Move to device
             image = image_tensors.to(device)
             text, length = converter.encode(labels)
             batch_size = image.size(0)
@@ -207,6 +213,7 @@ def train(opt, AMP, WdB, train_data_path, train_data_list, test_data_path, test_
             while replay_batch and maxR>0:
                 maxR -= 1
                 
+                # Forward pass
                 preds = model(image,text).float()
                 preds_size = torch.IntTensor([preds.size(1)] * batch_size).to(device)
                 preds = preds.permute(1, 0, 2).log_softmax(2)
@@ -225,6 +232,7 @@ def train(opt, AMP, WdB, train_data_path, train_data_list, test_data_path, test_
                 optimizer.zero_grad()
                 default_optimizer_step = optimizer.step  # added for batch replay
 
+                # Backward and step
                 if not AMP:
                     cost.backward()
                     replay_batch = False
@@ -301,7 +309,12 @@ def train(opt, AMP, WdB, train_data_path, train_data_list, test_data_path, test_
                     wandb.log({'lr': lr_scheduler.get_lr()[0], 'It':i, 'nED': current_norm_ED,  'B':bleu*100,
                     'tloss':train_loss.avg, 'AnED': best_norm_ED, 'CER':ted, 'bestCER':best_CER, 'vloss':valid_loss})
 
-        if i == num_iter:
+        if DEBUG:
+            print(f'[!!!] Iteration check. Value of i: {i} | Value of num_iter: {num_iter}')
+
+        # Change i == num_iter to i >= num_iter?
+
+        if i >= num_iter:
             print('end the training')
             sys.exit()
 
