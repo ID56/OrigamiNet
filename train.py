@@ -312,9 +312,9 @@ def train(opt, AMP, WdB, train_data_path, train_data_list, test_data_path, test_
         if DEBUG:
             print(f'[!!!] Iteration check. Value of i: {i} | Value of num_iter: {num_iter}')
 
-        # Change i == num_iter to i >= num_iter?
-
-        if i >= num_iter:
+        # Change i == num_iter to i >= num_iter
+        # Add num_iter > 0 condition
+        if num_iter > 0 and i >= num_iter:
             print('end the training')
             sys.exit()
 
