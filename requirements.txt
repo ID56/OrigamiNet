@@ -16,6 +16,4 @@ Pillow
 scikit_learn
 #horovod
 editdistance
-# git+https://github.com/google/gin-config
-# Refer to https://github.com/google/gin-config/issues/96#issuecomment-732502627
-# git+https://github.com/google/gin-config@22f59375a70d47e467c902eaeb6f979660995b84
+git+https://github.com/google/gin-config
