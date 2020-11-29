@@ -44,6 +44,8 @@ from test import validation
 DEBUG = True
 ############
 
+print('[1] COMPLETED IMPORTS')
+
 parOptions = namedtuple('parOptions', ['DP', 'DDP', 'HVD'])
 parOptions.__new__.__defaults__ = (False,) * len(parOptions._fields)
 
@@ -75,9 +77,11 @@ def train(opt, AMP, WdB, train_data_path, train_data_list, test_data_path, test_
     #     wandb.init(project=wdbprj, name=experiment_name)
     #     wandb.config.update(opt)
     
+    print('[4] IN TRAIN; BEFORE MAKING DATASET')
     train_dataset = ds_load.myLoadDS(train_data_list, train_data_path)
     valid_dataset = ds_load.myLoadDS(test_data_list, test_data_path , ralph=train_dataset.ralph)
 
+    print('[5] DATASET DONE LOADING' )
     if OnceExecWorker:
         print(pO)
         print('Alphabet :',len(train_dataset.alph),train_dataset.alph)
@@ -365,6 +369,8 @@ if __name__ == '__main__':
 
     opt = parser.parse_args()
     gInit(opt)
+    print('[2] FINISHED GIN INIT')
+
     opt.manualSeed = ginM('manualSeed')
     opt.port = ginM('port')
 
@@ -378,6 +384,7 @@ if __name__ == '__main__':
         opt.world_size = hvd.size()
         opt.rank       = hvd.rank()
     
+    print('[3] SETTINGS DONE; INIT TRAIN')
     if not pO.DDP:
         train(opt)
     else:
