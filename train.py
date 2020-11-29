@@ -33,7 +33,7 @@ from PIL import Image
 #from apex import amp
 #from apex.multi_tensor_apply import multi_tensor_applier
 
-import wandb
+#import wandb
 import ds_load
 
 from utils import CTCLabelConverter, Averager, ModelEma, Metric
@@ -71,9 +71,9 @@ def train(opt, AMP, WdB, train_data_path, train_data_list, test_data_path, test_
 
     os.makedirs(f'./saved_models/{experiment_name}', exist_ok=True)
 
-    if OnceExecWorker and WdB:
-        wandb.init(project=wdbprj, name=experiment_name)
-        wandb.config.update(opt)
+    # if OnceExecWorker and WdB:
+    #     wandb.init(project=wdbprj, name=experiment_name)
+    #     wandb.config.update(opt)
     
     train_dataset = ds_load.myLoadDS(train_data_list, train_data_path)
     valid_dataset = ds_load.myLoadDS(test_data_list, test_data_path , ralph=train_dataset.ralph)
@@ -123,8 +123,8 @@ def train(opt, AMP, WdB, train_data_path, train_data_list, test_data_path, test_
     optimizer = optim.Adam(model.parameters(), lr=lr)
     lr_scheduler = torch.optim.lr_scheduler.ExponentialLR(optimizer, gamma=10**(-1/90000))
 
-    if OnceExecWorker and WdB:
-        wandb.watch(model, log="all")
+    # if OnceExecWorker and WdB:
+    #     wandb.watch(model, log="all")
 
     if pO.HVD:
         hvd.broadcast_parameters(model.state_dict(), root_rank=0)
@@ -166,8 +166,8 @@ def train(opt, AMP, WdB, train_data_path, train_data_list, test_data_path, test_
             opt_log += '---------------------------------------\n'
             opt_log += gin.operative_config_str()
             opt_file.write(opt_log)
-            if WdB:
-                wandb.config.gin_str = gin.operative_config_str().splitlines()
+            # if WdB:
+            #     wandb.config.gin_str = gin.operative_config_str().splitlines()
 
 
         print(optimizer)
@@ -306,9 +306,9 @@ def train(opt, AMP, WdB, train_data_path, train_data_list, test_data_path, test_
 
                 with open(f'./saved_models/{experiment_name}/log_train.txt', 'a') as log: log.write(out + '\n')
 
-                if WdB:
-                    wandb.log({'lr': lr_scheduler.get_lr()[0], 'It':i, 'nED': current_norm_ED,  'B':bleu*100,
-                    'tloss':train_loss.avg, 'AnED': best_norm_ED, 'CER':ted, 'bestCER':best_CER, 'vloss':valid_loss})
+                # if WdB:
+                #     wandb.log({'lr': lr_scheduler.get_lr()[0], 'It':i, 'nED': current_norm_ED,  'B':bleu*100,
+                #     'tloss':train_loss.avg, 'AnED': best_norm_ED, 'CER':ted, 'bestCER':best_CER, 'vloss':valid_loss})
 
         if DEBUG:
             print(f'[!!!] Iteration check. Value of i: {i} | Value of num_iter: {num_iter}')
