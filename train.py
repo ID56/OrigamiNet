@@ -27,11 +27,11 @@ import numpy as np
 from tqdm import tqdm, trange
 from PIL import Image
 
-import apex
-from apex.parallel import DistributedDataParallel as aDDP
-from apex.fp16_utils import *
-from apex import amp
-from apex.multi_tensor_apply import multi_tensor_applier
+#import apex
+#from apex.parallel import DistributedDataParallel as aDDP
+#from apex.fp16_utils import *
+#from apex import amp
+#from apex.multi_tensor_apply import multi_tensor_applier
 
 import wandb
 import ds_load
@@ -136,8 +136,8 @@ def train(opt, AMP, WdB, train_data_path, train_data_list, test_data_path, test_
         random.seed()
         np.random.seed()
 
-    if AMP:
-        model, optimizer = amp.initialize(model, optimizer, opt_level = "O1")
+    # if AMP:
+    #     model, optimizer = amp.initialize(model, optimizer, opt_level = "O1")
     if pO.DP:
         model = torch.nn.DataParallel(model)
     elif pO.DDP:
@@ -237,17 +237,18 @@ def train(opt, AMP, WdB, train_data_path, train_data_list, test_data_path, test_
                     cost.backward()
                     replay_batch = False
                 else:
-                    with amp.scale_loss(cost, optimizer) as scaled_loss:
-                        scaled_loss.backward()
-                        if pO.HVD: optimizer.synchronize()
+                    # with amp.scale_loss(cost, optimizer) as scaled_loss:
+                    #     scaled_loss.backward()
+                    #     if pO.HVD: optimizer.synchronize()
 
-                    if optimizer.step is default_optimizer_step or not btReplay:
-                        replay_batch = False
-                    elif maxR>0:
-                        optimizer.step()
+                    # if optimizer.step is default_optimizer_step or not btReplay:
+                    #     replay_batch = False
+                    # elif maxR>0:
+                    #     optimizer.step()
+                    pass
                     
                     
-            if btReplay: amp._amp_state.loss_scalers[0]._loss_scale = mx_sc
+            if btReplay: pass#amp._amp_state.loss_scalers[0]._loss_scale = mx_sc
             
             if (i+1) % gAcc == 0:
 
