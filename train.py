@@ -6,6 +6,7 @@ import string
 import argparse
 from collections import namedtuple
 import copy
+import json
 
 import torch
 import torch.backends.cudnn as cudnn
@@ -80,6 +81,10 @@ def train(opt, AMP, WdB, train_data_path, train_data_list, test_data_path, test_
     print('[4] IN TRAIN; BEFORE MAKING DATASET')
     train_dataset = ds_load.myLoadDS(train_data_list, train_data_path)
     valid_dataset = ds_load.myLoadDS(test_data_list, test_data_path , ralph=train_dataset.ralph)
+
+    # SAVE RALPH FOR LATER USE
+    with open(f'./saved_models/{experiment_name}/ralph.json', 'w+') as f:
+        json.dump(train_dataset.ralph, f)
 
     print('[5] DATASET DONE LOADING' )
     if OnceExecWorker:
