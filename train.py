@@ -290,9 +290,9 @@ def train(opt, AMP, WdB, train_data_path, train_data_list, test_data_path, test_
                 if current_norm_ED < best_norm_ED:
                     best_norm_ED = current_norm_ED
                     checkpoint = {
-                        'model': model.state_dict(),
-                        'state_dict_ema': model_ema.ema.state_dict(),
-                        'optimizer': optimizer.state_dict(),
+                        'model': model.state_dict()#,
+                        #'state_dict_ema': model_ema.ema.state_dict(),
+                        #'optimizer': optimizer.state_dict(),
                     }
                     torch.save(checkpoint, f'./saved_models/{experiment_name}/best_norm_ED.pth')
 

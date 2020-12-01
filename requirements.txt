@@ -5,6 +5,7 @@ tqdm
 lmdb
 scikit_image
 matplotlib
+torch
 torchsummary
 nltk
 torchvision
