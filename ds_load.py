@@ -107,19 +107,20 @@ def SameTrCollate(batch, prjAug, prjVal):
 class myLoadDS(Dataset):
     def __init__(self, flist, dpath, ralph=None, fmin=True, mln=None):
         self.fns = get_files(flist, dpath)
-        self.tlbls = get_labels(self.fns)
+        self.ralph = ralph
+        # self.tlbls = get_labels(self.fns)
         
-        if ralph == None:
-            alph  = get_alphabet(self.tlbls)
-            self.ralph = dict (zip(alph.values(),alph.keys()))
-            self.alph = alph
-        else:
-            self.ralph = ralph
+        # if ralph == None:
+        #     alph  = get_alphabet(self.tlbls)
+        #     self.ralph = dict (zip(alph.values(),alph.keys()))
+        #     self.alph = alph
+        # else:
+        #     self.ralph = ralph
         
-        if mln != None:
-            filt = [len(x) <= mln if fmin else len(x) >= mln for x in self.tlbls]
-            self.tlbls = np.asarray(self.tlbls)[filt].tolist()
-            self.fns   = np.asarray(self.fns  )[filt].tolist()
+        # if mln != None:
+        #     filt = [len(x) <= mln if fmin else len(x) >= mln for x in self.tlbls]
+        #     self.tlbls = np.asarray(self.tlbls)[filt].tolist()
+        #     self.fns   = np.asarray(self.fns  )[filt].tolist()
     
     def __len__(self):
         return len(self.fns)
@@ -128,7 +129,13 @@ class myLoadDS(Dataset):
         timgs = get_images(self.fns[index])
         timgs = timgs.transpose((2,0,1))
 
-        return ( timgs , self.tlbls[index] )
+        fname = os.path.splitext(self.fns[index])[0] + '.txt'
+        
+        with open(fname, 'r') as f:
+            label = f.read()
+        label = ' '.join(label.split())
+
+        return ( timgs , label )
 
 def get_files(nfile, dpath):
     fnames = open(nfile, 'r').readlines()
