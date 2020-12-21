@@ -108,6 +108,7 @@ class myLoadDS(Dataset):
     def __init__(self, flist, dpath, ralph=None, fmin=True, mln=None):
         self.fns = get_files(flist, dpath)
         self.ralph = ralph
+        self.alph = dict(zip(ralph.values(), ralph.keys()))
         # self.tlbls = get_labels(self.fns)
         
         # if ralph == None:
@@ -130,7 +131,7 @@ class myLoadDS(Dataset):
         timgs = timgs.transpose((2,0,1))
 
         fname = os.path.splitext(self.fns[index])[0] + '.txt'
-        
+
         with open(fname, 'r') as f:
             label = f.read()
         label = ' '.join(label.split())

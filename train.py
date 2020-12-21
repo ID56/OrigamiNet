@@ -78,6 +78,7 @@ def train(opt, AMP, WdB, ralph_path, train_data_path, train_data_list, test_data
     #     wandb.init(project=wdbprj, name=experiment_name)
     #     wandb.config.update(opt)
 
+    # load supplied ralph
     with open(ralph_path, 'r') as f:
         ralph_train = json.load(f)
     
@@ -95,10 +96,10 @@ def train(opt, AMP, WdB, ralph_path, train_data_path, train_data_list, test_data
         print('Alphabet :',len(train_dataset.alph),train_dataset.alph)
         for d in [train_dataset, valid_dataset]:
             print('Dataset Size :',len(d.fns))
-            print('Max LbW : ',max(list(map(len,d.tlbls))) )
-            print('#Chars : ',sum([len(x) for x in d.tlbls]))
-            print('Sample label :',d.tlbls[-1])
-            print("Dataset :", sorted(list(map(len,d.tlbls))) )
+            # print('Max LbW : ',max(list(map(len,d.tlbls))) )
+            # print('#Chars : ',sum([len(x) for x in d.tlbls]))
+            # print('Sample label :',d.tlbls[-1])
+            # print("Dataset :", sorted(list(map(len,d.tlbls))) )
             print('-'*80)
     
     if opt.num_gpu > 1:
