@@ -67,7 +67,7 @@ def WrkSeeder(_):
     return np.random.seed((torch.initial_seed()) % (2 ** 32))
 
 @gin.configurable
-def train(opt, AMP, WdB, train_data_path, train_data_list, test_data_path, test_data_list, experiment_name, 
+def train(opt, AMP, WdB, ralph_path, train_data_path, train_data_list, test_data_path, test_data_list, experiment_name, 
             train_batch_size, val_batch_size, workers, lr, valInterval, num_iter, wdbprj, continue_model=''):
 
     HVD3P = pO.HVD or pO.DDP
@@ -77,14 +77,17 @@ def train(opt, AMP, WdB, train_data_path, train_data_list, test_data_path, test_
     # if OnceExecWorker and WdB:
     #     wandb.init(project=wdbprj, name=experiment_name)
     #     wandb.config.update(opt)
+
+    with open(ralph_path, 'r') as f:
+        ralph_train = json.load(f)
     
     print('[4] IN TRAIN; BEFORE MAKING DATASET')
-    train_dataset = ds_load.myLoadDS(train_data_list, train_data_path)
-    valid_dataset = ds_load.myLoadDS(test_data_list, test_data_path , ralph=train_dataset.ralph)
+    train_dataset = ds_load.myLoadDS(train_data_list, train_data_path, ralph=ralph_train)
+    valid_dataset = ds_load.myLoadDS(test_data_list, test_data_path, ralph=ralph_train)
 
     # SAVE RALPH FOR LATER USE
-    with open(f'./saved_models/{experiment_name}/ralph.json', 'w+') as f:
-        json.dump(train_dataset.ralph, f)
+    # with open(f'./saved_models/{experiment_name}/ralph.json', 'w+') as f:
+    #     json.dump(train_dataset.ralph, f)
 
     print('[5] DATASET DONE LOADING' )
     if OnceExecWorker:
