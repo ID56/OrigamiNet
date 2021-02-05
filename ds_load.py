@@ -106,7 +106,8 @@ def SameTrCollate(batch, prjAug, prjVal):
 
 class myLoadDS(Dataset):
     def __init__(self, flist, dpath, ralph=None, fmin=True, mln=None):
-        self.fns = get_files(flist, dpath)
+        self.dpath = dpath
+        self.fns = get_files(flist)
         self.ralph = ralph
         self.alph = dict(zip(ralph.values(), ralph.keys()))
         # self.tlbls = get_labels(self.fns)
@@ -127,20 +128,22 @@ class myLoadDS(Dataset):
         return len(self.fns)
 
     def __getitem__(self, index):
-        timgs = get_images(self.fns[index])
+        timgs = get_images(os.path.join(self.dpath, 'images', self.fns[index]))
         timgs = timgs.transpose((2,0,1))
 
         fname = os.path.splitext(self.fns[index])[0] + '.txt'
+        fname = os.path.join(self.dpath, 'labels', fname)
 
         with open(fname, 'r') as f:
             label = f.read()
+            
         label = ' '.join(label.split())
 
         return ( timgs , label )
 
-def get_files(nfile, dpath):
+def get_files(nfile):
     fnames = open(nfile, 'r').readlines()
-    fnames = [ dpath + x.strip() for x in fnames ]
+    fnames = [ x.strip() for x in fnames ]
     return fnames
 
 def npThum(img, max_w, max_h):
