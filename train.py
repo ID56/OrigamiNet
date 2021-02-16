@@ -45,6 +45,15 @@ from test import validation
 DEBUG = True
 ############
 
+def load_finetune(model, finetune_path):
+    """Loads params from finetune ckpt except mismatch layers (ie, final fc layer)"""
+    model_state = model.state_dict()
+    finetune_state = torch.load(finetune_path)["model"]
+    finetune_state = {k:v for k, v in finetune_state.items() if k in model_state and v.size() == model_state[k].size()}
+    model_state.update(finetune_state)
+    model.load_state_dict(model_state)
+    return model
+
 print('[1] COMPLETED IMPORTS')
 
 parOptions = namedtuple('parOptions', ['DP', 'DDP', 'HVD'])
@@ -68,7 +77,7 @@ def WrkSeeder(_):
 
 @gin.configurable
 def train(opt, AMP, WdB, ralph_path, train_data_path, train_data_list, test_data_path, test_data_list, experiment_name, 
-            train_batch_size, val_batch_size, workers, lr, valInterval, num_iter, wdbprj, continue_model=''):
+            train_batch_size, val_batch_size, workers, lr, valInterval, num_iter, wdbprj, continue_model='', finetune=''):
 
     HVD3P = pO.HVD or pO.DDP
 
@@ -121,6 +130,11 @@ def train(opt, AMP, WdB, ralph_path, train_data_path, train_data_list, test_data
     
     model = OrigamiNet()
     model.apply(init_bn)
+
+    # load finetune ckpt
+    if finetune != '':
+        model = load_finetune(model, finetune_path)
+
     model.train()
 
     if OnceExecWorker: import pprint;[print(k,model.lreszs[k]) for k in sorted(model.lreszs.keys())]
@@ -156,6 +170,7 @@ def train(opt, AMP, WdB, ralph_path, train_data_path, train_data_list, test_data
     elif pO.DDP:
         model = pDDP(model, device_ids=[opt.rank], output_device=opt.rank,find_unused_parameters=False)
 
+    
     
     
     model_ema = ModelEma(model)
