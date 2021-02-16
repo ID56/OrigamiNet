@@ -133,7 +133,7 @@ def train(opt, AMP, WdB, ralph_path, train_data_path, train_data_list, test_data
 
     # load finetune ckpt
     if finetune != '':
-        model = load_finetune(model, finetune_path)
+        model = load_finetune(model, finetune)
 
     model.train()
 
