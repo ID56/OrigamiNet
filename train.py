@@ -232,7 +232,7 @@ def train(opt, AMP, WdB, ralph_path, train_data_path, train_data_list, test_data
                 image_tensors, labels, fnames = next(titer)
             
             # log filenames
-            fnames = [f'{i}_{fname}' for fname in fnames]
+            fnames = [f'{i}___{fname}' for fname in fnames]
             with open(f'./saved_models/{experiment_name}/filelog.txt', 'a+') as f:
                 f.write('\n'.join(fnames) + '\n')
 
