@@ -89,7 +89,7 @@ def RndTform(img,val):
 
 @gin.configurable
 def SameTrCollate(batch, prjAug, prjVal):
-    images, labels = zip(*batch)
+    images, labels, fnames = zip(*batch)
 
     images = [image.transpose((1,2,0)) for image in images]
     
@@ -101,7 +101,7 @@ def SameTrCollate(batch, prjAug, prjVal):
     image_tensors = torch.cat([t.unsqueeze(0) for t in image_tensors], 0)
     image_tensors = image_tensors.permute(0,3,1,2)
 
-    return image_tensors, labels
+    return image_tensors, labels, fnames
 
 
 class myLoadDS(Dataset):
@@ -139,7 +139,8 @@ class myLoadDS(Dataset):
             
         label = ' '.join(label.split())
 
-        return ( timgs , label )
+        # also returning filename, for tracking
+        return ( timgs , label, self.fns[index])
 
 def get_files(nfile):
     fnames = open(nfile, 'r').readlines()
