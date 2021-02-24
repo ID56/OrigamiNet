@@ -118,7 +118,7 @@ def train(opt, AMP, WdB, ralph_path, train_data_path, train_data_list, test_data
         train_sampler = torch.utils.data.distributed.DistributedSampler(train_dataset, num_replicas=opt.world_size, rank=opt.rank)
         valid_sampler = torch.utils.data.distributed.DistributedSampler(valid_dataset, num_replicas=opt.world_size, rank=opt.rank)
 
-    train_loader  = torch.utils.data.DataLoader( train_dataset, batch_size=train_batch_size, shuffle=True if not HVD3P else False, 
+    train_loader  = torch.utils.data.DataLoader( train_dataset, batch_size=train_batch_size, shuffle=False,#True if not HVD3P else False, 
                     pin_memory = True, num_workers = int(workers),
                     sampler = train_sampler if HVD3P else None,
                     worker_init_fn = WrkSeeder,
