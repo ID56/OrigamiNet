@@ -262,6 +262,10 @@ def train(opt, AMP, WdB, ralph_path, train_data_path, train_data_list, test_data
 
                 train_loss.update(cost)
 
+                # cost tracking?
+                with open(f'./saved_models/{experiment_name}/steplog.txt', 'a+') as f:
+                    f.write(f'Step {i} cost: {cost}\n')
+                
                 optimizer.zero_grad()
                 default_optimizer_step = optimizer.step  # added for batch replay
 
