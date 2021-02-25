@@ -232,9 +232,9 @@ def train(opt, AMP, WdB, ralph_path, train_data_path, train_data_list, test_data
                 image_tensors, labels, fnames = next(titer)
             
             # log filenames
-            fnames = [f'{i}___{fname}' for fname in fnames]
-            with open(f'./saved_models/{experiment_name}/filelog.txt', 'a+') as f:
-                f.write('\n'.join(fnames) + '\n')
+            # fnames = [f'{i}___{fname}' for fname in fnames]
+            # with open(f'./saved_models/{experiment_name}/filelog.txt', 'a+') as f:
+            #     f.write('\n'.join(fnames) + '\n')
 
             # Move to device
             image = image_tensors.to(device)
@@ -263,8 +263,8 @@ def train(opt, AMP, WdB, ralph_path, train_data_path, train_data_list, test_data
                 train_loss.update(cost)
 
                 # cost tracking?
-                with open(f'./saved_models/{experiment_name}/steplog.txt', 'a+') as f:
-                    f.write(f'Step {i} cost: {cost}\n')
+                # with open(f'./saved_models/{experiment_name}/steplog.txt', 'a+') as f:
+                #     f.write(f'Step {i} cost: {cost}\n')
                 
                 optimizer.zero_grad()
                 default_optimizer_step = optimizer.step  # added for batch replay
